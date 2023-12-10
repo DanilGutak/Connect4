@@ -169,6 +169,7 @@ void game_loop(char **map, int line, int column)
 		
 		if (turn)
 		{
+			turn = 0;
 		ft_putstr_fd("\nPlayer1 type your move: ", 1);
 		//move = malloc(100);
 		//i_read = read(0, move, 99);
@@ -190,6 +191,7 @@ void game_loop(char **map, int line, int column)
 		free(move);
 		}
 		else {
+			turn = 1;
 		ft_putstr_fd("\nPlayer2 type your move: ", 1);
 		}
 	}
