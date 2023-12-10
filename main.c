@@ -1,4 +1,5 @@
 #include "connect4.h"
+#include <stdio.h>
 
 void	free_array(char **args)
 {
@@ -71,8 +72,7 @@ int input_move(char **map, int move, int line, char player)
 	line--;
 	while (line >= 0)
 	{
-		if (map[line][move - 1] == 'x' && map[line][move - 1] != '1'
-			&& map[line][move - 1] != '2')
+		if (map[line][move - 1] == 'x')
 		{
 			map[line][move - 1] = player;
 			render_map(map);
@@ -162,9 +162,24 @@ void game_loop(char **map, int line, int column)
 	int i_read = 0;
 	int i = 0;
 	char player_won = 0;
+	int j = 0;
+
 	while (!game_over)
 	{
 		
+		if (j == 0)
+		{
+			int res = rand();
+			printf("\nres %d\n", res % column);
+			input_move(map, res % column + 1, line, '2');
+			player_won = end_game(map, i, res, '2', line);
+			if (player_won)
+				game_over = 1;
+			j = 1;
+		}
+		else
+		{
+		j = 0;
 		ft_putstr_fd("\nPlayer1 type your move: ", 1);
 		move = malloc(100);
 		i_read = read(0, move, 99);
@@ -183,6 +198,7 @@ void game_loop(char **map, int line, int column)
 				game_over = 1;
 		}
 		free(move);
+		}
 	}
 	ft_putstr_fd("Player ", 1);
 	ft_putchar_fd(player_won, 1);

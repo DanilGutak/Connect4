@@ -1,0 +1,2 @@
+1) does not check for diagonal
+2) segfaults
