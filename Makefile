@@ -1,42 +1,58 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: dgutak <dgutak@student.42vienna.com>       +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/11/18 23:48:22 by nnuno-ca          #+#    #+#              #
-#    Updated: 2023/12/10 19:36:53 by dgutak           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+###############################################################################
+######                            PROPERTIES                             ######
+###############################################################################
 
-CC = cc
-CFLAGS = -g -Wall -Wextra -Werror -Ofast -march=native
-LIBFT = ./libft/libft.a
-RM = rm -rf
-NAME = connect4
-SRC = main.c read_mapfile.c ai.c
-OBJ = $(SRC:.c=.o)
+CC		= cc
+RM		= rm -rf
+CFLAGS	= -Wall -Wextra -Werror -MD -MP -Ofast -march=native 
+LINKS	= -L. -lmlx -lXext -lX11 -lm
 
-DEPS = connect4.h
+###############################################################################
+######                               LIBFT                               ######
+###############################################################################
+
+LIBDIR		= ./libft
+LIBFT		= ${LIBDIR}/libft.a
+
+###############################################################################
+######                             MANDATORY                             ######
+###############################################################################
+
+NAME		= connect4
+SRCSDIR		= srcs
+SRCS		= ${SRCSDIR}/ai.c \
+			${SRCSDIR}/read_mapfile.c \
+			${SRCSDIR}/main.c
+
+OBJSDIR		= ${SRCSDIR}/objs
+DEPS		= $(SRCS:${SRCSDIR}/%.c=${OBJSDIR}/%.d)
+OBJS		= $(SRCS:${SRCSDIR}/%.c=${OBJSDIR}/%.o)
 
 
-%.o: %.c $(DEPS)
-	$(CC) $(CFLAGS) -c $< -o $@
 
-all: $(NAME)
+all		: $(NAME)
 
-$(NAME): $(OBJ)
-	$(MAKE) -C ./libft
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
 
-clean:
-	$(MAKE) clean -C ./libft
+$(NAME)	: ${OBJS}
+		make --no-print-directory -C ${LIBDIR} all
+		$(CC) $(CFLAGS) -o $@ $^ $(LINKS) -L. ${LIBFT}
 
-fclean: clean
-	$(MAKE) fclean -C ./libft
-	$(RM) $(NAME)
+${OBJSDIR}/%.o		: ${SRCSDIR}/%.c
+		@mkdir -p $(dir $@)
+		${CC} ${CFLAGS} -c $< -o $@ -I ./includes
 
-re: fclean all
 
-.PHONY: clean fclean re
+clean	:
+		make --no-print-directory -C ${LIBDIR} clean
+		$(RM) $(OBJSDIR) $(OBJSDIR_B)
+
+fclean	:
+		make --no-print-directory -C ${LIBDIR} fclean
+		$(RM) $(OBJSDIR) $(OBJSDIR_B) $(NAME) $(NAME_B)
+
+
+re		: fclean all
+
+-include $(DEPS_B) $(DEPS)
+
+.PHONY: all clean fclean bonus re t

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   read_mapfile.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cthaler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: dgutak <dgutak@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:24:17 by cthaler           #+#    #+#             */
-/*   Updated: 2023/11/16 11:24:19 by cthaler          ###   ########.fr       */
+/*   Updated: 2023/12/10 22:25:40 by dgutak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "connect4.h"
+#include "../includes/connect4.h"
 
 static char	*join_the_str(char *s1, char *s2)
 {

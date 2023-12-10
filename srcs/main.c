@@ -1,7 +1,5 @@
-#include "connect4.h"
-#include "libft/libft.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "../includes/connect4.h"
+#include "../libft/libft.h"
 
 void	free_array(char **args)
 {
@@ -77,11 +75,14 @@ int	init_map(char **map, int line, int column)
 void	render_map(char **map)
 {
 	int	i;
-	int len = 0;
-	while(map[len])
+	int	len;
+	int	j;
+
+	len = 0;
+	while (map[0][len])
 		len++;
 	len += 2;
-	int j = 0;
+	j = 0;
 	i = 0;
 	while (map[i])
 	{
@@ -99,14 +100,13 @@ void	render_map(char **map)
 		while (map[i][j])
 		{
 			if (map[i][j] == '1')
-				ft_putstr_fd("\033[32;1;3m1\033[0m", 1);
+				ft_putstr_fd("\033[32;1;3mO\033[0m", 1);
 			else if (map[i][j] == '2')
-				ft_putstr_fd("\033[31;1;3m2\033[0m", 1);
+				ft_putstr_fd("\033[31;1;3mX\033[0m", 1);
 			else
-				ft_putstr_fd("\033[36;1;3mx\033[0m", 1);
+				ft_putstr_fd("\033[36;1;3m.\033[0m", 1);
 			j++;
 		}
-		//ft_putstr_fd(map[i], 1);
 		ft_putstr_fd("\033[34;1;3m|\033[0m", 1);
 		ft_putchar_fd('\n', 1);
 		i++;
@@ -118,7 +118,6 @@ void	render_map(char **map)
 		j++;
 	}
 }
-//ft_putstr_fd("\033[31;1;4m|\n\033[0m", 1);
 
 int	input_move(char **map, int move, int line, char player)
 {
@@ -223,7 +222,6 @@ char	end_game(char **map, int i, int j, char c, int line)
 }
 int	input_move_sim(char **map, int move, int line, char player)
 {
-	
 	line--;
 	while (line >= 0)
 	{
@@ -235,104 +233,6 @@ int	input_move_sim(char **map, int move, int line, char player)
 		line--;
 	}
 	return (-1);
-}
-double	run_simulation(char **map, int line, int column, int i)
-{
-	double		wins;
-	int		j;
-	char	**map_copy;
-	int		l;
-	int		next_move;
-	int		turn = 1;
-	char	player_won;
-	int		game_over;
-	
-
-	wins = 0;
-	j = 0;
-	map_copy = malloc(sizeof(char *) * (line + 1));
-	for (int k = 0; k < line; k++)
-	{
-		map_copy[k] = malloc(sizeof(char) * (column + 1));
-		ft_strlcpy(map_copy[k], map[k], column + 1);
-	}
-	l = input_move_sim(map_copy, i + 1, line, '2');
-	if (l == -1)
-		return (0);
-	while (j < 10000)
-	{
-		for (int k = 0; k < line; k++)
-			ft_strlcpy(map_copy[k], map[k], column + 1);
-		game_over = 0;
-		turn = 1;
-		while (!game_over)
-		{
-			if (turn)
-			{
-				turn = 0;
-				next_move = rand() % column + 1;
-				i = input_move_sim(map_copy, next_move, line, '1');
-				if (i == -1)
-				{
-					turn = 1;
-					continue ;
-				}
-				player_won = end_game(map_copy, i, next_move - 1, '1', line);
-				if (player_won)
-					game_over = 1;
-			}
-			else
-			{
-				turn = 1;
-				next_move = rand() % column + 1;
-				i = input_move_sim(map_copy, next_move, line, '2');
-				if (i == -1)
-				{
-					turn = 0;
-					continue ;
-				}
-				player_won = end_game(map_copy, i, next_move - 1, '2', line);
-				if (player_won)
-					game_over = 1;
-			}
-			}
-		j++;
-		if (player_won == 'x')
-			wins += 0.5;
-		else if (player_won == '2')
-			wins += 1;
-}
-	return (wins/10000);
-}
-
-int	monte_carlo(char **map, int line, int column)
-{
-	int		i;
-	double	scores[column];
-	int ret;
-	double max = 0;
-
-	ret = 0;
-	i = 0;
-	ft_bzero(scores, column);
-	while (i < column)
-	{
-		if (map[0][i] == 'x')
-		{
-			scores[i] = run_simulation(map, line, column, i);
-			printf("score for %d is %f\n", i, scores[i]);
-		}
-		i++;
-	}
-	for (int j = 0; j < column; j++)
-	{
-		if (scores[j] > max)
-		{
-			max = scores[j];
-			ret = j + 1;
-		}
-	}
-	return (ret);
 }
 void	game_loop(char **map, int line, int column)
 {
@@ -392,7 +292,7 @@ void	game_loop(char **map, int line, int column)
 		{
 			turn = 1;
 			ft_putstr_fd("\nPlayer2 is making its turn... \n", 1);
-			next_move = find_best_move(map, 8, line, column);
+			next_move = find_best_move(map, 3, line, column);
 			i = input_move(map, next_move, line, '2');
 			while (i == -1)
 			{
@@ -408,7 +308,7 @@ void	game_loop(char **map, int line, int column)
 		ft_putstr_fd("It's a draw\n", 1);
 	else
 	{
-		ft_putstr_fd("Player ", 1);
+		ft_putstr_fd("\nPlayer ", 1);
 		ft_putchar_fd(player_won, 1);
 		ft_putstr_fd(" has won the game\n", 1);
 	}
@@ -431,12 +331,12 @@ int	main(int argc, char **argv)
 	column = ft_atoi(argv[2]);
 	if (!check_args(argv, line, column))
 	{
-		ft_putstr_fd("invalid numbers", 1);
+		ft_putstr_fd("invalid numbers\n", 1);
 		return (1);
 	}
 	if (line < 6 || column < 7)
 	{
-		ft_putstr_fd("size of grid too small", 1);
+		ft_putstr_fd("size of grid too small\n", 1);
 		return (1);
 	}
 	// create map
