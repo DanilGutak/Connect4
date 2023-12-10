@@ -1,5 +1,6 @@
 #include "connect4.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void	free_array(char **args)
 {
@@ -81,8 +82,7 @@ int	input_move(char **map, int move, int line, char player)
 	line--;
 	while (line >= 0)
 	{
-		if (map[line][move - 1] == 'x' && map[line][move - 1] != '1'
-			&& map[line][move - 1] != '2')
+		if (map[line][move - 1] == 'x')
 		{
 			map[line][move - 1] = player;
 			render_map(map);
@@ -90,7 +90,8 @@ int	input_move(char **map, int move, int line, char player)
 		}
 		line--;
 	}
-	ft_putstr_fd("\ncolumn is full", 1);
+	if (player == '1')
+		ft_putstr_fd("\ncolumn is full", 1);
 	return (-1);
 }
 
@@ -198,12 +199,13 @@ void	game_loop(char **map, int line, int column)
 			ft_putstr_fd("\nPlayer1 type your move: ", 1);
 			move = read_mapfile(0, 1);
 			if (!move)
-		{
-			turn = 1;
-			ft_putstr_fd("\nInvalid move. Choose a Number between 1 and ", 1);
-			ft_putnbr_fd(column, 1);
-			continue;
-		}
+			{
+				turn = 1;
+				ft_putstr_fd("\nInvalid move. Choose a Number between 1 and ", 1);
+				ft_putnbr_fd(column, 1);
+				ft_putstr_fd("\n", 1);
+				continue;
+			}
 			next_move = ft_atoi(move);
 			if (!check_arg(move, next_move) || next_move > column
 				|| next_move < 1)
@@ -211,6 +213,7 @@ void	game_loop(char **map, int line, int column)
 				ft_putstr_fd("\nInvalid move. Choose a Number between 1 and ",
 					1);
 				ft_putnbr_fd(column, 1);
+				ft_putstr_fd("\n", 1);
 				turn = 1;
 			}
 			else
@@ -220,6 +223,7 @@ void	game_loop(char **map, int line, int column)
 				if (i == -1)
 				{
 					turn = 1;
+					free(move);
 					continue ;
 				}
 				player_won = end_game(map, i, next_move - 1, '1', line);
@@ -231,11 +235,11 @@ void	game_loop(char **map, int line, int column)
 		else
 		{
 			turn = 1;
-			ft_putstr_fd("\nPlayer2 \n", 1);
+			ft_putstr_fd("\nPlayer2 is making its turn... \n", 1);
 			i = -1;
 			while (i == -1)
 			{
-				next_move = rand() % column;
+				next_move = rand() % column + 1;
 				i = input_move(map, next_move, line, '2');
 			}
 
@@ -245,12 +249,12 @@ void	game_loop(char **map, int line, int column)
 		}
 	}
 	if (player_won == 'x')
-		ft_putstr_fd("It's a draw");
+		ft_putstr_fd("It's a draw\n",1);
 	else
 	{
 		ft_putstr_fd("Player ", 1);
 		ft_putchar_fd(player_won, 1);
-		ft_putstr_fd(" has won the game", 1);
+		ft_putstr_fd(" has won the game\n", 1);
 	}
 }
 
@@ -260,6 +264,7 @@ int	main(int argc, char **argv)
 	int		column;
 	char	**map;
 
+	srand(time(NULL));
 	// handle args
 	if (argc != 3)
 	{
