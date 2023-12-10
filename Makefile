@@ -15,7 +15,7 @@ CFLAGS = -g -Wall -Wextra -Werror
 LIBFT = ./libft/libft.a
 RM = rm -rf
 NAME = connect4
-SRC = main.c
+SRC = main.c read_mapfile.c
 OBJ = $(SRC:.c=.o)
 
 DEPS = connect4.h

@@ -159,16 +159,17 @@ void game_loop(char **map, int line, int column)
 	int game_over = 0;
 	char *move;
 	int next_move;
-	int i_read = 0;
+	//int i_read = 0;
 	int i = 0;
 	char player_won = 0;
 	while (!game_over)
 	{
 		
 		ft_putstr_fd("\nPlayer1 type your move: ", 1);
-		move = malloc(100);
-		i_read = read(0, move, 99);
-		move[i_read - 1] = 0;
+		//move = malloc(100);
+		//i_read = read(0, move, 99);
+		//move[i_read - 1] = 0;
+		move = read_mapfile(0, 1);
 		next_move = ft_atoi(move);
 		if (!check_arg(move, next_move) || next_move > column || next_move < 1)
 		{
