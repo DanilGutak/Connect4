@@ -226,8 +226,9 @@ double	run_simulation(char **map, int line, int column, int i)
 	if (l == -1)
 		return (0);
 	render_map(map_copy);
-	while (j < 10000)
+	while (j < 100000)
 	{
+		srand(time(NULL));
 		for (int k = 0; k < line; k++)
 			ft_strlcpy(map_copy[k], map[k], column + 1);
 		game_over = 0;
@@ -265,11 +266,11 @@ double	run_simulation(char **map, int line, int column, int i)
 			}
 		j++;
 		if (player_won == 'x')
-			wins += 0.0;
+			wins += 0.5;
 		else if (player_won == '2')
 			wins += 1;
 }
-	return (wins/10000);
+	return (wins/100000);
 }
 
 int	monte_carlo(char **map, int line, int column)
