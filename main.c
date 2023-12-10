@@ -1,7 +1,7 @@
 #include "connect4.h"
 #include "libft/libft.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void	free_array(char **args)
 {
@@ -26,7 +26,7 @@ int	check_arg(char *arg, int line)
 
 	line_a = ft_itoa(line);
 	if (!line_a)
-		return 0;
+		return (0);
 	if (ft_strncmp(line_a, arg, ft_strlen(arg)))
 		return (free(line_a), 0);
 	return (free(line_a), 1);
@@ -40,7 +40,7 @@ int	check_args(char **argv, int line, int column)
 
 	line_a = ft_itoa(line);
 	if (!line_a)
-		return 0;
+		return (0);
 	column_a = ft_itoa(column);
 	if (!column_a)
 		return (free(line_a), 0);
@@ -61,7 +61,7 @@ int	init_map(char **map, int line, int column)
 		j = 0;
 		map[i] = malloc(column + 1);
 		if (!map[i])
-			return 0;
+			return (0);
 		while (j < column)
 		{
 			map[i][j] = 'x';
@@ -71,7 +71,7 @@ int	init_map(char **map, int line, int column)
 		i++;
 	}
 	map[i] = 0;
-	return 1;
+	return (1);
 }
 
 void	render_map(char **map)
@@ -110,9 +110,10 @@ char	end_game(char **map, int i, int j, char c, int line)
 {
 	int	check;
 	int	k;
+	int	check_full;
 
 	k = 0;
-	int check_full = 1;
+	check_full = 1;
 	while (map[0][k])
 	{
 		if (map[0][k] == 'x')
@@ -120,7 +121,7 @@ char	end_game(char **map, int i, int j, char c, int line)
 		k++;
 	}
 	if (check_full)
-		return 'x';
+		return ('x');
 	// check downwards
 	check = 1;
 	k = 1;
@@ -187,35 +188,118 @@ char	end_game(char **map, int i, int j, char c, int line)
 	}
 	return (0);
 }
-float run_simulation(char **map, int line, int column, int i)
+int	input_move_sim(char **map, int move, int line, char player)
 {
-	int wins = 0;
-	int j = 0;
-	char **map_copy = malloc(sizeof(char *) * (line + 1));
-	for (int k = 0; k < line; k++)
-		map_copy[k] = malloc(sizeof(char) * (column + 1));
-	while (j < 100)
+	line--;
+	while (line >= 0)
 	{
-		for(int k = 0; k < line; k++)
-			ft_strlcpy(map_copy[k], map[k], column + 1);
+		if (map[line][move - 1] == 'x')
+		{
+			map[line][move - 1] = player;
+			return (line);
+		}
+		line--;
 	}
+	return (-1);
+}
+double	run_simulation(char **map, int line, int column, int i)
+{
+	double		wins;
+	int		j;
+	char	**map_copy;
+	int		l;
+	int		next_move;
+	int		turn = 1;
+	char	player_won;
+	int		game_over;
+	
+
+	wins = 0;
+	j = 0;
+	map_copy = malloc(sizeof(char *) * (line + 1));
+	for (int k = 0; k < line; k++)
+	{
+		map_copy[k] = malloc(sizeof(char) * (column + 1));
+		ft_strlcpy(map_copy[k], map[k], column + 1);
+	}
+	l = input_move_sim(map_copy, i, line, '2');
+	if (l == -1)
+		return (0);
+	render_map(map_copy);
+	while (j < 10000)
+	{
+		for (int k = 0; k < line; k++)
+			ft_strlcpy(map_copy[k], map[k], column + 1);
+		game_over = 0;
+		turn = 1;
+		while (!game_over)
+		{
+			if (turn)
+			{
+				turn = 0;
+				next_move = rand() % 7 + 1;
+				i = input_move_sim(map_copy, next_move, line, '1');
+				if (i == -1)
+				{
+					turn = 1;
+					continue ;
+				}
+				player_won = end_game(map_copy, i, next_move - 1, '1', line);
+				if (player_won)
+					game_over = 1;
+			}
+			else
+			{
+				turn = 1;
+				next_move = rand() % 7 + 1;
+				i = input_move_sim(map_copy, next_move, line, '2');
+				if (i == -1)
+				{
+					turn = 0;
+					continue ;
+				}
+				player_won = end_game(map_copy, i, next_move - 1, '2', line);
+				if (player_won)
+					game_over = 1;
+			}
+			}
+		j++;
+		if (player_won == 'x')
+			wins += 0.0;
+		else if (player_won == '2')
+			wins += 1;
+}
+	return (wins/10000);
 }
 
-int monte_carlo(char **map, int line, int column)
+int	monte_carlo(char **map, int line, int column)
 {
-	int i = 0;
-	float scores[column];
+	int		i;
+	double	scores[column];
+	int ret;
+	double max = 0;
+
+
+	i = 0;
 	ft_bzero(scores, column);
 	while (i < column)
 	{
 		if (map[0][i] == 'x')
 		{
 			scores[i] = run_simulation(map, line, column, i);
+			printf("score for %d is %f\n", i + 1, scores[i]);
 		}
 		i++;
 	}
-
-	return (rand() % 7 + 1);
+	for (int j = 0; j < column; j++)
+	{
+		if (scores[j] > max)
+		{
+			max = scores[j];
+			ret = j + 1;
+		}
+	}
+	return (ret);
 }
 void	game_loop(char **map, int line, int column)
 {
@@ -240,10 +324,11 @@ void	game_loop(char **map, int line, int column)
 			if (!move)
 			{
 				turn = 1;
-				ft_putstr_fd("\nInvalid move. Choose a Number between 1 and ", 1);
+				ft_putstr_fd("\nInvalid move. Choose a Number between 1 and ",
+					1);
 				ft_putnbr_fd(column, 1);
 				ft_putstr_fd("\n", 1);
-				continue;
+				continue ;
 			}
 			next_move = ft_atoi(move);
 			if (!check_arg(move, next_move) || next_move > column
@@ -257,7 +342,6 @@ void	game_loop(char **map, int line, int column)
 			}
 			else
 			{
-				
 				i = input_move(map, next_move, line, '1');
 				if (i == -1)
 				{
@@ -278,17 +362,16 @@ void	game_loop(char **map, int line, int column)
 			i = -1;
 			while (i == -1)
 			{
-				next_move = monte_carlo(map,line,column);
+				next_move = monte_carlo(map, line, column);
 				i = input_move(map, next_move, line, '2');
 			}
-
 			player_won = end_game(map, i, next_move, '2', line);
 			if (player_won)
 				game_over = 1;
 		}
 	}
 	if (player_won == 'x')
-		ft_putstr_fd("It's a draw\n",1);
+		ft_putstr_fd("It's a draw\n", 1);
 	else
 	{
 		ft_putstr_fd("Player ", 1);
@@ -325,7 +408,7 @@ int	main(int argc, char **argv)
 	// create map
 	map = malloc(sizeof(map) * (line + 1));
 	if (!map)
-		return 1;
+		return (1);
 	if (!init_map(map, line, column))
 		return (free_array(map), 1);
 	render_map(map);
