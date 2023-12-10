@@ -77,15 +77,48 @@ int	init_map(char **map, int line, int column)
 void	render_map(char **map)
 {
 	int	i;
-
+	int len = 0;
+	while(map[len])
+		len++;
+	len += 2;
+	int j = 0;
 	i = 0;
 	while (map[i])
 	{
-		ft_putstr_fd(map[i], 1);
+		if (i == 0)
+		{
+			while (j < len)
+			{
+				ft_putstr_fd("\033[34;1;4m-\033[0m", 1);
+				j++;
+			}
+			ft_putchar_fd('\n', 1);
+		}
+		j = 0;
+		ft_putstr_fd("\033[34;1;3m|\033[0m", 1);
+		while (map[i][j])
+		{
+			if (map[i][j] == '1')
+				ft_putstr_fd("\033[32;1;3m1\033[0m", 1);
+			else if (map[i][j] == '2')
+				ft_putstr_fd("\033[31;1;3m2\033[0m", 1);
+			else
+				ft_putstr_fd("\033[36;1;3mx\033[0m", 1);
+			j++;
+		}
+		//ft_putstr_fd(map[i], 1);
+		ft_putstr_fd("\033[34;1;3m|\033[0m", 1);
 		ft_putchar_fd('\n', 1);
 		i++;
 	}
+	j = 0;
+	while (j < len)
+	{
+		ft_putstr_fd("\033[34;1;4m-\033[0m", 1);
+		j++;
+	}
 }
+//ft_putstr_fd("\033[31;1;4m|\n\033[0m", 1);
 
 int	input_move(char **map, int move, int line, char player)
 {
@@ -279,7 +312,7 @@ int	monte_carlo(char **map, int line, int column)
 	int ret;
 	double max = 0;
 
-
+	ret = 0;
 	i = 0;
 	ft_bzero(scores, column);
 	while (i < column)
