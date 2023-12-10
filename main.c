@@ -17,30 +17,37 @@ void	free_array(char **args)
 	free(args);
 }
 
-//check for overflow
-int check_arg(char *arg, int line)
+// check for overflow
+int	check_arg(char *arg, int line)
 {
-	char *line_a = ft_itoa(line);
-	
+	char	*line_a;
+
+	line_a = ft_itoa(line);
 	if (ft_strncmp(line_a, arg, ft_strlen(arg)))
 		return (free(line_a), 0);
 	return (free(line_a), 1);
 }
 
-//check for overflow
-int check_args(char **argv, int line, int column)
+// check for overflow
+int	check_args(char **argv, int line, int column)
 {
-	char *line_a = ft_itoa(line);
-	char *column_a = ft_itoa(column);
+	char	*line_a;
+	char	*column_a;
+
+	line_a = ft_itoa(line);
+	column_a = ft_itoa(column);
 	if (ft_strncmp(line_a, argv[1], 10) || ft_strncmp(column_a, argv[2], 10))
 		return (free(line_a), free(column_a), 0);
 	return (free(line_a), free(column_a), 1);
 }
 
-void init_map(char **map, int line, int column)
+void	init_map(char **map, int line, int column)
 {
-	int i = 0;
-	int j = 0;
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
 	while (i < line)
 	{
 		j = 0;
@@ -56,10 +63,12 @@ void init_map(char **map, int line, int column)
 	map[i] = 0;
 }
 
-void render_map(char **map)
+void	render_map(char **map)
 {
-	int i = 0;
-	while(map[i])
+	int	i;
+
+	i = 0;
+	while (map[i])
 	{
 		ft_putstr_fd(map[i], 1);
 		ft_putchar_fd('\n', 1);
@@ -67,7 +76,7 @@ void render_map(char **map)
 	}
 }
 
-int input_move(char **map, int move, int line, char player)
+int	input_move(char **map, int move, int line, char player)
 {
 	line--;
 	while (line >= 0)
@@ -77,20 +86,23 @@ int input_move(char **map, int move, int line, char player)
 		{
 			map[line][move - 1] = player;
 			render_map(map);
-			return line;
+			return (line);
 		}
 		line--;
 	}
 	ft_putstr_fd("\ncolumn is full", 1);
-	return -1;
+	return (-1);
 }
 
-//check path for winning move
-char end_game(char **map, int i, int j, char c, int line)
+// check path for winning move
+char	end_game(char **map, int i, int j, char c, int line)
 {
-	//check downwards
-	int check = 1;
-	int k = 1;
+	int	check;
+	int	k;
+
+	// check downwards
+	check = 1;
+	k = 1;
 	while (i + 3 < line && k <= 3)
 	{
 		if (map[i + k][j] == c)
@@ -100,8 +112,8 @@ char end_game(char **map, int i, int j, char c, int line)
 		k++;
 	}
 	if (check == 4)
-		return c;
-	//check left to right
+		return (c);
+	// check left to right
 	check = 0;
 	k = -3;
 	while (k <= 3)
@@ -110,15 +122,15 @@ char end_game(char **map, int i, int j, char c, int line)
 		{
 			check++;
 			if (check == 4)
-				return c;
+				return (c);
 		}
 		else
 			check = 0;
 		if (j + k >= 0 && !map[i][j + k])
-			break;
+			break ;
 		k++;
 	}
-	//check top left to bottom right
+	// check top left to bottom right
 	check = 0;
 	k = -3;
 	while (k <= 3 && i + k < line)
@@ -127,15 +139,15 @@ char end_game(char **map, int i, int j, char c, int line)
 		{
 			check++;
 			if (check == 4)
-				return c;
+				return (c);
 		}
 		else
 			check = 0;
 		if (i + k >= 0 && j + k >= 0 && !map[i + k][j + k])
-			break;
+			break ;
 		k++;
 	}
-	//check bottom left to top right
+	// check bottom left to top right
 	check = 0;
 	k = -3;
 	while (k <= 3 && i - k < line)
@@ -144,55 +156,79 @@ char end_game(char **map, int i, int j, char c, int line)
 		{
 			check++;
 			if (check == 4)
-				return c;
+				return (c);
 		}
 		else
 			check = 0;
 		if (i - k >= 0 && j + k >= 0 && !map[i - k][j + k])
-			break;
+			break ;
 		k++;
 	}
-	return 0;
+	return (0);
 }
 
-void game_loop(char **map, int line, int column)
+void	game_loop(char **map, int line, int column)
 {
-	int game_over = 0;
-	char *move;
-	int next_move;
-	//int i_read = 0;
-	int turn = rand() % 2;
-	int i = 0;
-	char player_won = 0;
+	int		game_over;
+	char	*move;
+	int		next_move;
+	int		turn;
+	int		i;
+	char	player_won;
+
+	game_over = 0;
+	// int i_read = 0;
+	turn = rand() % 2;
+	i = 0;
+	player_won = 0;
 	while (!game_over)
 	{
-		
 		if (turn)
 		{
 			turn = 0;
-		ft_putstr_fd("\nPlayer1 type your move: ", 1);
-		//move = malloc(100);
-		//i_read = read(0, move, 99);
-		//move[i_read - 1] = 0;
-		move = read_mapfile(0, 1);
-		next_move = ft_atoi(move);
-		if (!check_arg(move, next_move) || next_move > column || next_move < 1)
-		{
-			ft_putstr_fd("\nInvalid move. Choose a Number between 1 and ", 1);
-			ft_putnbr_fd(column, 1);
+			ft_putstr_fd("\nPlayer1 type your move: ", 1);
+			// move = malloc(100);
+			// i_read = read(0, move, 99);
+			// move[i_read - 1] = 0;
+			move = read_mapfile(0, 1);
+			next_move = ft_atoi(move);
+			if (!check_arg(move, next_move) || next_move > column
+				|| next_move < 1)
+			{
+				ft_putstr_fd("\nInvalid move. Choose a Number between 1 and ",
+					1);
+				ft_putnbr_fd(column, 1);
+				turn = 1;
+			}
+			else
+			{
+				
+				i = input_move(map, next_move, line, '1');
+				if (i == -1)
+				{
+					turn = 1;
+					continue ;
+				}
+				player_won = end_game(map, i, next_move - 1, '1', line);
+				if (player_won)
+					game_over = 1;
+			}
+			free(move);
 		}
 		else
 		{
-			i = input_move(map, next_move, line, '1');
-			player_won = end_game(map, i, next_move - 1, '1', line);
+			turn = 1;
+			ft_putstr_fd("\nPlayer2 \n", 1);
+			i = -1;
+			while (i == -1)
+			{
+				next_move = rand() % column;
+				i = input_move(map, next_move, line, '2');
+			}
+
+			player_won = end_game(map, i, next_move, '2', line);
 			if (player_won)
 				game_over = 1;
-		}
-		free(move);
-		}
-		else {
-			turn = 1;
-		ft_putstr_fd("\nPlayer2 type your move: ", 1);
 		}
 	}
 	ft_putstr_fd("Player ", 1);
@@ -200,35 +236,36 @@ void game_loop(char **map, int line, int column)
 	ft_putstr_fd(" has won the game", 1);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	//handle args
+	int		line;
+	int		column;
+	char	**map;
+
+	// handle args
 	if (argc != 3)
 	{
 		ft_putstr_fd("invalid number of arguments", 1);
-		return 1;
+		return (1);
 	}
-	int line = ft_atoi(argv[1]);
-	int column = ft_atoi(argv[2]);
-
+	line = ft_atoi(argv[1]);
+	column = ft_atoi(argv[2]);
 	if (!check_args(argv, line, column))
 	{
 		ft_putstr_fd("invalid numbers", 1);
-		return 1;
+		return (1);
 	}
-	
 	if (line < 6 || column < 7)
 	{
 		ft_putstr_fd("size of grid too small", 1);
-		return 1;
+		return (1);
 	}
-	//create map
-	char **map;
+	// create map
 	map = malloc(sizeof(map) * (line + 1));
 	init_map(map, line, column);
 	render_map(map);
-	//gameloop
+	// gameloop
 	game_loop(map, line, column);
 	free_array(map);
-	return 0;
+	return (0);
 }
