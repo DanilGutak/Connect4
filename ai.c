@@ -31,33 +31,35 @@ int score_game(char **map, int line, int column)
                 {
                     for (int d = 0; d < 4; d++)
                     {
-                        int x = j + 3 * directions[d][0];
-                        int y = k + 3 * directions[d][1];
-
-                        if (x >= 0 && x < line && y >= 0 && y < column)
+                        int count = 0;
+                        for (int i = 0; i < 4; i++)
                         {
-                            int count = 1;
-                            for (int i = 1; i <= 3; i++)
-                                if (map[j + i * directions[d][0]][k + i * directions[d][1]] == player + '0')
-                                    count++;
-                            if (player == 2)
+                            int x = j + i * directions[d][0];
+                            int y = k + i * directions[d][1];
+
+                            if (x >= 0 && x < line && y >= 0 && y < column && map[x][y] == player + '0')
                             {
-                                if (count == 4)
-                                    score += 100;
-                                else if (count == 3)
-                                    score += 5;
-                                else if (count == 2)
-                                    score += 2;
+                                count++;
                             }
-                            else
-                            {
-                                if (count == 4)
-                                    score -= 500;
-                                else if (count == 3)
-                                    score -= 50;
-                                else if (count == 2)
-                                    score -= 5;
-                            }
+                        }
+
+                        if (player == 2)
+                        {
+                            if (count == 4)
+                                score += 100;
+                            else if (count == 3)
+                                score += 5;
+                            else if (count == 2)
+                                score += 2;
+                        }
+                        else
+                        {
+                            if (count == 4)
+                                score -= 500;
+                            else if (count == 3)
+                                score -= 50;
+                            else if (count == 2)
+                                score -= 5;
                         }
                     }
                 }
