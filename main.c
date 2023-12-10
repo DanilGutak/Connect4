@@ -24,6 +24,8 @@ int	check_arg(char *arg, int line)
 	char	*line_a;
 
 	line_a = ft_itoa(line);
+	if (!line_a)
+		return 0;
 	if (ft_strncmp(line_a, arg, ft_strlen(arg)))
 		return (free(line_a), 0);
 	return (free(line_a), 1);
@@ -36,13 +38,17 @@ int	check_args(char **argv, int line, int column)
 	char	*column_a;
 
 	line_a = ft_itoa(line);
+	if (!line_a)
+		return 0;
 	column_a = ft_itoa(column);
+	if (!column_a)
+		return (free(line_a), 0);
 	if (ft_strncmp(line_a, argv[1], 10) || ft_strncmp(column_a, argv[2], 10))
 		return (free(line_a), free(column_a), 0);
 	return (free(line_a), free(column_a), 1);
 }
 
-void	init_map(char **map, int line, int column)
+int	init_map(char **map, int line, int column)
 {
 	int	i;
 	int	j;
@@ -53,6 +59,8 @@ void	init_map(char **map, int line, int column)
 	{
 		j = 0;
 		map[i] = malloc(column + 1);
+		if (!map[i])
+			return 0;
 		while (j < column)
 		{
 			map[i][j] = 'x';
@@ -62,6 +70,7 @@ void	init_map(char **map, int line, int column)
 		i++;
 	}
 	map[i] = 0;
+	return 1;
 }
 
 void	render_map(char **map)
@@ -285,7 +294,10 @@ int	main(int argc, char **argv)
 	}
 	// create map
 	map = malloc(sizeof(map) * (line + 1));
-	init_map(map, line, column);
+	if (!map)
+		return 1;
+	if (!init_map(map, line, column))
+		return (free_array(map), 1);
 	render_map(map);
 	// gameloop
 	game_loop(map, line, column);
