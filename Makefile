@@ -3,19 +3,19 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nnuno-ca <nnuno-ca@student.42porto.com>    +#+  +:+       +#+         #
+#    By: dgutak <dgutak@student.42vienna.com>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/18 23:48:22 by nnuno-ca          #+#    #+#              #
-#    Updated: 2023/02/08 23:43:21 by nnuno-ca         ###   ########.fr        #
+#    Updated: 2023/12/10 19:36:53 by dgutak           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = cc
-CFLAGS = -g -Wall -Wextra -Werror
+CFLAGS = -g -Wall -Wextra -Werror -Ofast -march=native
 LIBFT = ./libft/libft.a
 RM = rm -rf
 NAME = connect4
-SRC = main.c read_mapfile.c
+SRC = main.c read_mapfile.c ai.c
 OBJ = $(SRC:.c=.o)
 
 DEPS = connect4.h

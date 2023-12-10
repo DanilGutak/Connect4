@@ -190,6 +190,7 @@ char	end_game(char **map, int i, int j, char c, int line)
 }
 int	input_move_sim(char **map, int move, int line, char player)
 {
+	
 	line--;
 	while (line >= 0)
 	{
@@ -222,13 +223,11 @@ double	run_simulation(char **map, int line, int column, int i)
 		map_copy[k] = malloc(sizeof(char) * (column + 1));
 		ft_strlcpy(map_copy[k], map[k], column + 1);
 	}
-	l = input_move_sim(map_copy, i, line, '2');
+	l = input_move_sim(map_copy, i + 1, line, '2');
 	if (l == -1)
 		return (0);
-	render_map(map_copy);
-	while (j < 100000)
+	while (j < 10000)
 	{
-		srand(time(NULL));
 		for (int k = 0; k < line; k++)
 			ft_strlcpy(map_copy[k], map[k], column + 1);
 		game_over = 0;
@@ -238,7 +237,7 @@ double	run_simulation(char **map, int line, int column, int i)
 			if (turn)
 			{
 				turn = 0;
-				next_move = rand() % 7 + 1;
+				next_move = rand() % column + 1;
 				i = input_move_sim(map_copy, next_move, line, '1');
 				if (i == -1)
 				{
@@ -252,7 +251,7 @@ double	run_simulation(char **map, int line, int column, int i)
 			else
 			{
 				turn = 1;
-				next_move = rand() % 7 + 1;
+				next_move = rand() % column + 1;
 				i = input_move_sim(map_copy, next_move, line, '2');
 				if (i == -1)
 				{
@@ -270,7 +269,7 @@ double	run_simulation(char **map, int line, int column, int i)
 		else if (player_won == '2')
 			wins += 1;
 }
-	return (wins/100000);
+	return (wins/10000);
 }
 
 int	monte_carlo(char **map, int line, int column)
@@ -288,7 +287,7 @@ int	monte_carlo(char **map, int line, int column)
 		if (map[0][i] == 'x')
 		{
 			scores[i] = run_simulation(map, line, column, i);
-			printf("score for %d is %f\n", i + 1, scores[i]);
+			printf("score for %d is %f\n", i, scores[i]);
 		}
 		i++;
 	}
@@ -360,13 +359,14 @@ void	game_loop(char **map, int line, int column)
 		{
 			turn = 1;
 			ft_putstr_fd("\nPlayer2 is making its turn... \n", 1);
-			i = -1;
+			next_move = find_best_move(map, 8, line, column);
+			i = input_move(map, next_move, line, '2');
 			while (i == -1)
 			{
-				next_move = monte_carlo(map, line, column);
+				next_move = rand() % column + 1;
 				i = input_move(map, next_move, line, '2');
 			}
-			player_won = end_game(map, i, next_move, '2', line);
+			player_won = end_game(map, i, next_move - 1, '2', line);
 			if (player_won)
 				game_over = 1;
 		}
