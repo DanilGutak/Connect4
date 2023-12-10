@@ -177,7 +177,6 @@ void	game_loop(char **map, int line, int column)
 	char	player_won;
 
 	game_over = 0;
-	// int i_read = 0;
 	turn = rand() % 2;
 	i = 0;
 	player_won = 0;
@@ -187,10 +186,14 @@ void	game_loop(char **map, int line, int column)
 		{
 			turn = 0;
 			ft_putstr_fd("\nPlayer1 type your move: ", 1);
-			// move = malloc(100);
-			// i_read = read(0, move, 99);
-			// move[i_read - 1] = 0;
 			move = read_mapfile(0, 1);
+			if (!move)
+		{
+			turn = 1;
+			ft_putstr_fd("\nInvalid move. Choose a Number between 1 and ", 1);
+			ft_putnbr_fd(column, 1);
+			continue;
+		}
 			next_move = ft_atoi(move);
 			if (!check_arg(move, next_move) || next_move > column
 				|| next_move < 1)
