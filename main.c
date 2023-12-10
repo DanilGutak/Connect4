@@ -100,6 +100,16 @@ char	end_game(char **map, int i, int j, char c, int line)
 	int	check;
 	int	k;
 
+	k = 0;
+	int check_full = 1;
+	while (map[0][k])
+	{
+		if (map[0][k] == 'x')
+			check_full = 0;
+		k++;
+	}
+	if (check_full)
+		return 'x';
 	// check downwards
 	check = 1;
 	k = 1;
@@ -234,9 +244,14 @@ void	game_loop(char **map, int line, int column)
 				game_over = 1;
 		}
 	}
-	ft_putstr_fd("Player ", 1);
-	ft_putchar_fd(player_won, 1);
-	ft_putstr_fd(" has won the game", 1);
+	if (player_won == 'x')
+		ft_putstr_fd("It's a draw");
+	else
+	{
+		ft_putstr_fd("Player ", 1);
+		ft_putchar_fd(player_won, 1);
+		ft_putstr_fd(" has won the game", 1);
+	}
 }
 
 int	main(int argc, char **argv)
