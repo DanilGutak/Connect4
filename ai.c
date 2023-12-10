@@ -41,9 +41,23 @@ int score_game(char **map, int line, int column)
                                 if (map[j + i * directions[d][0]][k + i * directions[d][1]] == player + '0')
                                     count++;
                             if (player == 2)
-                                score += count;
+                            {
+                                if (count == 4)
+                                    score += 100;
+                                else if (count == 3)
+                                    score += 5;
+                                else if (count == 2)
+                                    score += 2;
+                            }
                             else
-                                score -= 2 *count * count * count * count *count * count *count ;
+                            {
+                                if (count == 4)
+                                    score -= 500;
+                                else if (count == 3)
+                                    score -= 50;
+                                else if (count == 2)
+                                    score -= 5;
+                            }
                         }
                     }
                 }
