@@ -3,3 +3,4 @@ connect4
 helloc
 test
 libft/libft.a
+.gitignore
