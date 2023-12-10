@@ -1,4 +1,5 @@
 #include "connect4.h"
+#include "libft/libft.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -186,7 +187,36 @@ char	end_game(char **map, int i, int j, char c, int line)
 	}
 	return (0);
 }
+float run_simulation(char **map, int line, int column, int i)
+{
+	int wins = 0;
+	int j = 0;
+	char **map_copy = malloc(sizeof(char *) * (line + 1));
+	for (int k = 0; k < line; k++)
+		map_copy[k] = malloc(sizeof(char) * (column + 1));
+	while (j < 100)
+	{
+		for(int k = 0; k < line; k++)
+			ft_strlcpy(map_copy[k], map[k], column + 1);
+	}
+}
 
+int monte_carlo(char **map, int line, int column)
+{
+	int i = 0;
+	float scores[column];
+	ft_bzero(scores, column);
+	while (i < column)
+	{
+		if (map[0][i] == 'x')
+		{
+			scores[i] = run_simulation(map, line, column, i);
+		}
+		i++;
+	}
+
+	return (rand() % 7 + 1);
+}
 void	game_loop(char **map, int line, int column)
 {
 	int		game_over;
@@ -248,7 +278,7 @@ void	game_loop(char **map, int line, int column)
 			i = -1;
 			while (i == -1)
 			{
-				next_move = rand() % column + 1;
+				next_move = monte_carlo(map,line,column);
 				i = input_move(map, next_move, line, '2');
 			}
 
